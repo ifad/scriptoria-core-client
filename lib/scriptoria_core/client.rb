@@ -12,10 +12,6 @@ module ScriptoriaCore
       self
     end
 
-    def self.client
-      @@client
-    end
-
     def self.start!(workflow, callbacks_or_callback)
       request_body = { workflow: workflow }
 
@@ -30,6 +26,12 @@ module ScriptoriaCore
 
     def self.proceed!(url, fields)
       client.post(url, body: { fields: fields })
+    end
+
+    private
+
+    def self.client
+      @@client
     end
   end
 end
