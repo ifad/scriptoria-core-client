@@ -13,7 +13,7 @@ module ScriptoriaCore
       self
     end
 
-    def self.start!(workflow, callbacks_or_callback)
+    def self.start!(workflow, callbacks_or_callback, fields = {})
       request_body = { workflow: workflow }
 
       if callbacks_or_callback.is_a?(String)
@@ -21,6 +21,8 @@ module ScriptoriaCore
       else
         request_body[:callbacks] = callbacks_or_callback
       end
+
+      request_body[:fields] = fields
 
       client.post('/v1/workflows', body: request_body)['id']
     end
