@@ -1,5 +1,6 @@
 require 'pathname'
 require 'active_support/inflector'
+require 'scriptoria_core/client/version'
 
 module ScriptoriaCore
   autoload :Base,     'scriptoria_core/base.rb'
