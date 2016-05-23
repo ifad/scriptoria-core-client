@@ -27,6 +27,10 @@ module ScriptoriaCore
       client.post('/v1/workflows', body: request_body)['id']
     end
 
+    def self.cancel!(workflow_id)
+      client.post("/v1/workflows/#{workflow_id}/cancel")
+    end
+
     def self.proceed!(url, fields)
       client.post(url, body: { fields: fields })
     end
