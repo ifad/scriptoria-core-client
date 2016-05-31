@@ -13,6 +13,16 @@ module ScriptoriaCore
       self
     end
 
+    # Ping the ScriptoriaCore API
+    # Raises Hawk::Error if the request fails
+    # @return nil
+    def self.ping
+      response = client.get('/v1/ping')
+      unless response['ping'] == 'pong'
+        raise PingError, "Unexpected response #{response.inspect}"
+      end
+    end
+
     def self.start!(workflow, callbacks_or_callback, fields = {})
       request_body = { workflow: workflow }
 
@@ -34,6 +44,8 @@ module ScriptoriaCore
     def self.proceed!(url, fields)
       client.post(url, body: { fields: fields })
     end
+
+    class PingError < Hawk::Error; end
 
     private
 
