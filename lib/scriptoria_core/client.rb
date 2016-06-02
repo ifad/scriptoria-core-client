@@ -57,7 +57,7 @@ module ScriptoriaCore
 
     def response_json(response)
       JSON.parse(response.body)
-    rescue JSON::ParserError => e
+    rescue Exception => e
       raise ScriptoriaCore::Errors::UnexpectedResponseError.new("JSON parse error: #{e.message} for: #{response.inspect}")
     end
   end
