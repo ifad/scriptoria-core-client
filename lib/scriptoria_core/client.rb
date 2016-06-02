@@ -1,30 +1,27 @@
-require 'pathname'
-require 'hawk'
-require 'active_support/inflector'
 require 'scriptoria_core/client/version'
 
 module ScriptoriaCore
-  autoload :Base,     'scriptoria_core/base.rb'
+  autoload :Errors, 'scriptoria_core/errors.rb'
+  autoload :Http,   'scriptoria_core/http.rb'
 
   module Client
+    include Http
+
     extend self
 
-    def self.configure base, options={}
-      @@client = Base.new(base, options)
-      self
-    end
-
     # Ping the ScriptoriaCore API
-    # Raises Hawk::Error if the request fails
+    # Raises ScriptoriaCore::Errors::Client::UnexpectedResponseError if the request fails
     # @return nil
-    def self.ping
-      response = client.get('/v1/ping')
-      unless response['ping'] == 'pong'
-        raise PingError, "Unexpected response #{response.inspect}"
+    def ping
+      response = get('/v1/ping')
+      check_response_status!(response, 200)
+
+      unless response_json(response)['ping'] == 'pong'
+        raise ScriptoriaCore::Errors::UnexpectedResponseError, "Unexpected response #{response.inspect}"
       end
     end
 
-    def self.start!(workflow, callbacks_or_callback, fields = {})
+    def start!(workflow, callbacks_or_callback, fields = {})
       request_body = { workflow: workflow }
 
       if callbacks_or_callback.is_a?(String)
@@ -35,23 +32,33 @@ module ScriptoriaCore
 
       request_body[:fields] = fields
 
-      client.post('/v1/workflows', body: request_body)['id']
+      response = post('/v1/workflows', request_body)
+      check_response_status!(response, 201)
+      response_json(response)['id']
     end
 
-    def self.cancel!(workflow_id)
-      client.post("/v1/workflows/#{workflow_id}/cancel")
+    def cancel!(workflow_id)
+      response = post("/v1/workflows/#{workflow_id}/cancel")
+      check_response_status!(response, 201)
     end
 
-    def self.proceed!(url, fields)
-      client.post(url, body: { fields: fields })
+    def proceed!(url, fields)
+      response = post(url, { fields: fields })
+      check_response_status!(response, 201)
     end
-
-    class PingError < Hawk::Error; end
 
     private
 
-    def self.client
-      @@client
+    def check_response_status!(response, status)
+      unless response.response_code == status
+        raise ScriptoriaCore::Errors::UnexpectedResponseError.new("Expected status #{status} for: #{response.inspect}")
+      end
+    end
+
+    def response_json(response)
+      JSON.parse(response.body)
+    rescue JSON::ParserError => e
+      raise ScriptoriaCore::Errors::UnexpectedResponseError.new("JSON parse error: #{e.message} for: #{response.inspect}")
     end
   end
 end

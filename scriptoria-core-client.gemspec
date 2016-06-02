@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.files             = `git ls-files`.split("\n")
   s.require_paths     = ["lib"]
 
-  s.add_dependency('hawk', '~> 0')
+  s.add_dependency('typhoeus', '~> 1.0')
 
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'rspec', '>= 3.4.0'
