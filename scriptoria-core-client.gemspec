@@ -16,4 +16,9 @@ Gem::Specification.new do |s|
   s.require_paths     = ["lib"]
 
   s.add_dependency('hawk', '~> 0')
+
+  s.add_development_dependency 'webmock'
+  s.add_development_dependency 'rspec', '>= 3.4.0'
+
+  s.test_files = s.files.grep %r[^(test|spec|features)]
 end

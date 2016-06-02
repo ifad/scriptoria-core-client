@@ -1,4 +1,5 @@
 require 'pathname'
+require 'hawk'
 require 'active_support/inflector'
 require 'scriptoria_core/client/version'
 
