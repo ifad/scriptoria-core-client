@@ -30,7 +30,9 @@ module ScriptoriaCore
         request_body[:callbacks] = callbacks_or_callback
       end
 
-      request_body[:fields] = fields
+      if fields != nil
+        request_body[:fields] = fields
+      end
 
       response = post('/v1/workflows', request_body)
       check_response_status!(response, 201)
@@ -43,7 +45,13 @@ module ScriptoriaCore
     end
 
     def proceed!(url, fields)
-      response = post(url, { fields: fields })
+      request_body = {}
+
+      if fields != nil
+        request_body[:fields] = fields
+      end
+
+      response = post(url, request_body)
       check_response_status!(response, 201)
     end
 

@@ -70,6 +70,13 @@ describe ScriptoriaCore::Client do
           with(body: 'callbacks%5Ba%5D=http%3A%2F%2Fexample1.com&callbacks%5Bb%5D=http%3A%2F%2Fexample2.com%2F&workflow=workflow')
       end
 
+      it "generates a request body with nil params" do
+        subject.start!("workflow", "http://example.com", nil)
+
+        expect(WebMock).to have_requested(:post, "http://core.dev/v1/workflows").
+          with(body: 'callback=http%3A%2F%2Fexample.com&workflow=workflow')
+      end
+
       it "generates a request body with a params" do
         subject.start!("workflow", "http://example.com", { a: 1, b: 2 })
 
@@ -141,6 +148,12 @@ describe ScriptoriaCore::Client do
     describe "request" do
       it "generates a request body without fields" do
         subject.proceed!("http://core.dev/v1/workflows/1234/workitems/5678/proceed", {})
+        expect(WebMock).to have_requested(:post, "http://core.dev/v1/workflows/1234/workitems/5678/proceed").
+          with(body: nil)
+      end
+
+      it "generates a request body with nil fields" do
+        subject.proceed!("http://core.dev/v1/workflows/1234/workitems/5678/proceed", nil)
         expect(WebMock).to have_requested(:post, "http://core.dev/v1/workflows/1234/workitems/5678/proceed").
           with(body: nil)
       end
