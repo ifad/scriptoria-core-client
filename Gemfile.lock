@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    scriptoria-core-client (1.0.0)
+    scriptoria-core-client (2.0.1)
       typhoeus (~> 1.0)
 
 GEM
